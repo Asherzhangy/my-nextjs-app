@@ -46,9 +46,9 @@ function AntdContainer({ children }: any) {
               label: 'User Info',
             },
             {
-              key: '3',
+              key: '/admin/articles',
               icon: <UploadOutlined />,
-              label: 'nav 3',
+              label: 'articles Management',
             },
           ]}
         />
