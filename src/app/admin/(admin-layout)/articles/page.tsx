@@ -3,10 +3,16 @@ import React,{ useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Table,Modal, Space } from 'antd';
 import { SearchOutlined,PlusOutlined,EditOutlined,DeleteOutlined} from '@ant-design/icons';
 
+type Article = {
+    id:string,
+    title:string,
+    desc:string 
+}
 function ArticlePage() {
     const [open,setOpen] = useState(false)
-    const [list,setList] = useState([])
+    const [list,setList] = useState<Article[]>([])
     const [query,setQuery] = useState({})
+    const [currentId,setCurrentId] = useState('')
     const [myForm] = Form.useForm()
     useEffect(()=>{
         fetch('/api/admin/articles').then(res=>res.json().then(res=>{
@@ -14,7 +20,9 @@ function ArticlePage() {
         }))
     },[query])
   return (
-    <Card title='文章管理' extra={<Button type='primary' icon={<PlusOutlined />} onClick={()=>setOpen(true)} />}>
+    <Card title='文章管理' extra={<Button type='primary' icon={<PlusOutlined />} onClick={()=>{
+        myForm.resetFields()
+        setOpen(true)}} />}>
       <Form layout='inline'>
         <Form.Item label='标题'>
           <Input placeholder='请输入关键词' />
@@ -44,9 +52,13 @@ function ArticlePage() {
           },
           {
             title: '操作',
-            render(){
+            render(v,r){
                 return <Space>
-                    <Button size='small' type='primary' icon={<EditOutlined />}  />
+                    <Button size='small' type='primary' icon={<EditOutlined />} onClick={()=>{
+                        setOpen(true)
+                        setCurrentId(r.id)
+                        myForm.setFieldsValue(r)
+                    }} />
                     <Button size='small' type='primary' icon={<DeleteOutlined />} danger />
                 </Space>
             }
@@ -55,10 +67,19 @@ function ArticlePage() {
       />
       <Modal title='编辑' open={open} onCancel={()=>setOpen(false)} onOk={()=>{myForm.submit()}}>
         <Form layout='vertical' form={myForm} onFinish={async(v)=>{
-            await fetch('/api/admin/articles',{
-                method:'POST',
-                body:JSON.stringify(v)
+            // 这里通过currentId来判断编辑还是新增
+            if(currentId){
+            await fetch('/api/admin/articles/'+currentId,{
+            method:'PUT',
+            body:JSON.stringify(v)
             }).then((res)=>res.json())
+            }else{
+            await fetch('/api/admin/articles',{
+            method:'POST',
+            body:JSON.stringify(v)
+            }).then((res)=>res.json())
+            
+            }
             setOpen(false)
             setQuery({})
         }}>
