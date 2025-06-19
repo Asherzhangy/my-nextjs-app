@@ -1,6 +1,6 @@
 'use client';
 import React,{ useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Table,Modal, Space } from 'antd';
+import { Button, Card, Form, Input, Table,Modal, Space,Popconfirm } from 'antd';
 import { SearchOutlined,PlusOutlined,EditOutlined,DeleteOutlined} from '@ant-design/icons';
 
 type Article = {
@@ -59,7 +59,13 @@ function ArticlePage() {
                         setCurrentId(r.id)
                         myForm.setFieldsValue(r)
                     }} />
-                    <Button size='small' type='primary' icon={<DeleteOutlined />} danger />
+                    <Popconfirm title="是否确认删除？" onConfirm={async()=>{
+                      await  fetch('/api/admin/articles/'+r.id,{method:'DELETE'}).then((res)=>res.json())
+                      setQuery({})
+                    }}>
+                     <Button size='small' type='primary' icon={<DeleteOutlined />} danger />
+                    </Popconfirm>
+                    
                 </Space>
             }
           }
