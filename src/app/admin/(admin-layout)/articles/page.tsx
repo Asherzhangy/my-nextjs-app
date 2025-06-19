@@ -1,11 +1,13 @@
 'use client';
-import React,{ useState } from 'react';
+import React,{ useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Table,Modal } from 'antd';
 import { SearchOutlined,PlusOutlined } from '@ant-design/icons';
 
 function ArticlePage() {
     const [open,setOpen] = useState(false)
+    const [list,setList] = useState([])
     const [myForm] = Form.useForm()
+    useEffect(()=>{},[])
   return (
     <Card title='文章管理' extra={<Button type='primary' icon={<PlusOutlined />} onClick={()=>setOpen(true)} />}>
       <Form layout='inline'>
@@ -33,8 +35,11 @@ function ArticlePage() {
         ]}
       />
       <Modal title='编辑' open={open} onCancel={()=>setOpen(false)} onOk={()=>{myForm.submit()}}>
-        <Form layout='vertical' form={myForm} onFinish={(v)=>{
-            console.log(v) //等会儿这里写接口
+        <Form layout='vertical' form={myForm} onFinish={async(v)=>{
+            await fetch('/api/admin/articles',{
+                method:'POST',
+                body:JSON.stringify(v)
+            }).then((res)=>res.json())
             setOpen(false)
         }}>
             <Form.Item label='标题' name='title' rules={[{required:true,message:"标题不能为空"}]}>
