@@ -10,8 +10,7 @@ import {
   MenuUnfoldOutlined,
   UploadOutlined,
   UserOutlined,
-  VideoCameraOutlined,
-  DashboardOutlined
+  TeamOutlined
 } from '@ant-design/icons';
 
 
@@ -37,19 +36,20 @@ function AntdContainer({ children }: any) {
           items={[
             {
               key: '/admin/dashboard',
-              icon: <DashboardOutlined/>,
-              label: 'dashboard',
-            },
-            {
-              key: '/admin/users',
               icon: <UserOutlined />,
-              label: 'User Info',
+              label: '履歴書',
             },
             {
               key: '/admin/articles',
               icon: <UploadOutlined />,
-              label: 'articles Management',
+              label: '記事管理',
             },
+            {
+              key: '/admin/users',
+              icon: <TeamOutlined />,
+              label: 'ユーザー情報',
+            }
+            
           ]}
         />
       </Sider>
