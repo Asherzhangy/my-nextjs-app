@@ -4,12 +4,14 @@ import { Button, Card, Form, Input, Table,Modal, Space,Popconfirm } from 'antd';
 import { SearchOutlined,PlusOutlined,EditOutlined,DeleteOutlined} from '@ant-design/icons';
 import MyUpload from '../../_components/MyUpload';
 import { title } from 'process';
+import MyEditor from '../../_components/MyEditor';
 
 type Article = {
     id:string,
     title:string,
     desc:string,
-    image:string 
+    image:string,
+    content:string 
 }
 function ArticlePage() {
     const [open,setOpen] = useState(false)
@@ -18,6 +20,8 @@ function ArticlePage() {
     const [currentId,setCurrentId] = useState('')
     const [myForm] = Form.useForm()
     const [imageUrl, setImageUrl] = useState<string>('');
+      // 编辑器内容
+    const [html, setHtml] = useState('<p>hello</p>')
     // useEffect这里是监听作用
     useEffect(()=>{
         fetch(`/api/admin/articles?title=${query.title}`).then(res=>res.json().then(res=>{
@@ -28,6 +32,7 @@ function ArticlePage() {
       if(!open){
         setCurrentId('')
         setImageUrl('')
+        setHtml('')
       }
     },[open])
   return (
@@ -83,7 +88,9 @@ function ArticlePage() {
                     <Button size='small' type='primary' icon={<EditOutlined />} onClick={()=>{
                         setOpen(true)
                         setCurrentId(r.id)
+                        // 这里是编辑回显
                         setImageUrl(r.image)
+                        setHtml(r.content)
                         myForm.setFieldsValue(r)
                     }} />
                     <Popconfirm title="是否确认删除？" onConfirm={async()=>{
@@ -98,18 +105,18 @@ function ArticlePage() {
           }
         ]}
       />
-      <Modal title='编辑' open={open} onCancel={()=>setOpen(false)} onOk={()=>{myForm.submit()}}>
+      <Modal title='编辑' width={'75vw'} open={open} onCancel={()=>setOpen(false)} onOk={()=>{myForm.submit()}}>
         <Form layout='vertical' form={myForm} onFinish={async(v)=>{
             // 这里通过currentId来判断编辑还是新增
             if(currentId){
             await fetch('/api/admin/articles/'+currentId,{
             method:'PUT',
-            body:JSON.stringify({...v,image:imageUrl})
+            body:JSON.stringify({...v,image:imageUrl,content:html})
             }).then((res)=>res.json())
             }else{
             await fetch('/api/admin/articles',{
             method:'POST',
-            body:JSON.stringify({...v,image:imageUrl})
+            body:JSON.stringify({...v,image:imageUrl,content:html})
             }).then((res)=>res.json())
             
             }
@@ -125,6 +132,9 @@ function ArticlePage() {
             </Form.Item>
             <Form.Item label='封面'>
               <MyUpload imageUrl={imageUrl} setImageUrl={setImageUrl}/>
+            </Form.Item>
+            <Form.Item label='详情'>
+              <MyEditor html={html} setHtml={setHtml}/>
             </Form.Item>
         </Form>
       </Modal>
