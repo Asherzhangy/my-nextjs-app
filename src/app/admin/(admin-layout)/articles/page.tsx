@@ -2,6 +2,7 @@
 import React,{ useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Table,Modal, Space,Popconfirm } from 'antd';
 import { SearchOutlined,PlusOutlined,EditOutlined,DeleteOutlined} from '@ant-design/icons';
+import { title } from 'process';
 
 type Article = {
     id:string,
@@ -11,11 +12,12 @@ type Article = {
 function ArticlePage() {
     const [open,setOpen] = useState(false)
     const [list,setList] = useState<Article[]>([])
-    const [query,setQuery] = useState({})
+    const [query,setQuery] = useState({title:''})
     const [currentId,setCurrentId] = useState('')
     const [myForm] = Form.useForm()
+    // useEffect这里是监听作用
     useEffect(()=>{
-        fetch('/api/admin/articles').then(res=>res.json().then(res=>{
+        fetch(`/api/admin/articles?title=${query.title}`).then(res=>res.json().then(res=>{
             setList(res.data.list)
         }))
     },[query])
@@ -23,12 +25,14 @@ function ArticlePage() {
     <Card title='文章管理' extra={<Button type='primary' icon={<PlusOutlined />} onClick={()=>{
         myForm.resetFields()
         setOpen(true)}} />}>
-      <Form layout='inline'>
-        <Form.Item label='标题'>
+      <Form layout='inline' onFinish={(v)=>{
+        setQuery({title:v.title})
+      }}>
+        <Form.Item label='标题' name='title'>
           <Input placeholder='请输入关键词' />
         </Form.Item>
         <Form.Item>
-          <Button icon={<SearchOutlined />} type='primary' />
+          <Button icon={<SearchOutlined />} htmlType='submit' type='primary' />
         </Form.Item>
       </Form>
       <Table
@@ -61,7 +65,7 @@ function ArticlePage() {
                     }} />
                     <Popconfirm title="是否确认删除？" onConfirm={async()=>{
                       await  fetch('/api/admin/articles/'+r.id,{method:'DELETE'}).then((res)=>res.json())
-                      setQuery({})
+                      setQuery({title:''})
                     }}>
                      <Button size='small' type='primary' icon={<DeleteOutlined />} danger />
                     </Popconfirm>
@@ -87,7 +91,7 @@ function ArticlePage() {
             
             }
             setOpen(false)
-            setQuery({})
+            setQuery({title:''})
         }}>
             <Form.Item label='标题' name='title' rules={[{required:true,message:"标题不能为空"}]}>
                 <Input placeholder='请输入名字' / >

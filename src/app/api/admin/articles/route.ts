@@ -1,9 +1,14 @@
 import { prisma } from '@/db';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const GET = async () => {
+export const GET = async (req:NextRequest) => {
+  const title = req.nextUrl.searchParams.get('title') as string || ''
   const data = await prisma.article.findMany({
-    where: {},
+    where: {
+      title:{
+        contains:title
+      }
+    },
     orderBy: {
       createdAt: 'desc',
     },
