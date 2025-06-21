@@ -5,7 +5,7 @@ function LoginPage() {
   const nav = useRouter();
   return (
     <div className='login-form pt-20 mx-auto w-full max-w-md'>
-      <Card title='Next全栈管理后台' className='w-4/5 mx-auto mt-20'>
+      <Card title='Nextフルスタック管理バックエンド' className='w-4/5 mx-auto mt-20'>
         <Form labelCol={{span:3}} onFinish={ async (v)=>{
             // console.log(v)
             const res = await fetch('/api/admin/login',{
@@ -15,11 +15,11 @@ function LoginPage() {
             console.log(res)
             nav.push('/admin/dashboard');
         }}>
-        <Form.Item name="userName" label='用户名'>
-          <Input placeholder='请输入用户名' />
+        <Form.Item name="userName" label='ユーザー名'>
+          <Input placeholder='ユーザー名を入力してください' />
         </Form.Item>
-        <Form.Item name="password" label='密码'>
-          <Input.Password placeholder='请输入密码' />
+        <Form.Item name="password" label='パスワード'>
+          <Input.Password placeholder='パスワードを入力してください' />
         </Form.Item>
         <Form.Item>
           <Button type='primary' htmlType='submit' className='mx-auto w-full max-w-md'>

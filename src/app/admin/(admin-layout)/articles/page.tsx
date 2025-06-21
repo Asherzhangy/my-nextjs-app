@@ -3,7 +3,7 @@ import React,{ useEffect, useState } from 'react';
 import { Button, Card, Form, Input, Table,Modal, Space,Popconfirm } from 'antd';
 import { SearchOutlined,PlusOutlined,EditOutlined,DeleteOutlined} from '@ant-design/icons';
 import MyUpload from '../../_components/MyUpload';
-import { title } from 'process';
+// import { title } from 'process';
 import MyEditor from '../../_components/MyEditor';
 
 type Article = {
@@ -36,14 +36,14 @@ function ArticlePage() {
       }
     },[open])
   return (
-    <Card title='文章管理' extra={<Button type='primary' icon={<PlusOutlined />} onClick={()=>{
+    <Card title='記事管理' extra={<Button type='primary' icon={<PlusOutlined />} onClick={()=>{
         myForm.resetFields()
         setOpen(true)}} />}>
       <Form layout='inline' onFinish={(v)=>{
         setQuery({title:v.title})
       }}>
-        <Form.Item label='标题' name='title'>
-          <Input placeholder='请输入关键词' />
+        <Form.Item label='タイトル' name='title'>
+          <Input placeholder='キーワードを入力してください' />
         </Form.Item>
         <Form.Item>
           <Button icon={<SearchOutlined />} htmlType='submit' type='primary' />
@@ -61,24 +61,26 @@ function ArticlePage() {
             }
           },
           {
-            title: '标题',
-            dataIndex:'title'
+            title: 'タイトル',
+            dataIndex:'title',
+            width:150
           },
           {
-            title: '封面',
+            title: 'カバー',
+            width:100,
             // dataIndex:'title'
             render(v,r){
               return (
                 <img 
                 src={r.image}
-                style={{width:'80px',maxHeight:'80px'}}
+                style={{width:'100px',maxHeight:'80px'}}
                 alt={r.title}
                 />
               )
             }
           },
           {
-            title: '简介',
+            title: '说明',
             dataIndex:'desc'
           },
           {
@@ -93,7 +95,7 @@ function ArticlePage() {
                         setHtml(r.content)
                         myForm.setFieldsValue(r)
                     }} />
-                    <Popconfirm title="是否确认删除？" onConfirm={async()=>{
+                    <Popconfirm title="削除を確認" onConfirm={async()=>{
                       await  fetch('/api/admin/articles/'+r.id,{method:'DELETE'}).then((res)=>res.json())
                       setQuery({title:''})
                     }}>
@@ -105,7 +107,7 @@ function ArticlePage() {
           }
         ]}
       />
-      <Modal title='编辑' width={'75vw'} open={open} onCancel={()=>setOpen(false)} onOk={()=>{myForm.submit()}}>
+      <Modal title='編集' width={'75vw'} open={open} onCancel={()=>setOpen(false)} onOk={()=>{myForm.submit()}}>
         <Form layout='vertical' form={myForm} onFinish={async(v)=>{
             // 这里通过currentId来判断编辑还是新增
             if(currentId){
@@ -124,16 +126,16 @@ function ArticlePage() {
       
             setQuery({title:''})
         }}>
-            <Form.Item label='标题' name='title' rules={[{required:true,message:"标题不能为空"}]}>
-                <Input placeholder='请输入名字' / >
+            <Form.Item label='タイトル' name='title' rules={[{required:true,message:"タイトルは空欄にできません"}]}>
+                <Input placeholder='タイトルを入力してください' / >
             </Form.Item>
-            <Form.Item label='简介' name='desc'>
-                <Input.TextArea placeholder='请输入简介' />
+            <Form.Item label='说明' name='desc'>
+                <Input.TextArea placeholder='説明を入力してください' />
             </Form.Item>
-            <Form.Item label='封面'>
+            <Form.Item label='カバー'>
               <MyUpload imageUrl={imageUrl} setImageUrl={setImageUrl}/>
             </Form.Item>
-            <Form.Item label='详情'>
+            <Form.Item label='詳細'>
               <MyEditor html={html} setHtml={setHtml}/>
             </Form.Item>
         </Form>
